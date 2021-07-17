@@ -15,5 +15,5 @@ variable "instance_size" {
   description = "Size of the instance"
   type        = string
   # nano micro small medium large xlarge 2xlarge
-  default     = "micro"
+  default     = "nano"
 }
