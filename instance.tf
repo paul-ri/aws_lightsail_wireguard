@@ -6,10 +6,32 @@ resource "aws_lightsail_instance" "wireguard" {
   key_pair_name     = aws_lightsail_key_pair.key.name
   depends_on        = [aws_lightsail_key_pair.key]
   user_data         = data.template_file.cloud_init.rendered
-
-  provisioner "local-exec" {
-    command = "aws lightsail put-instance-public-ports --instance-name ${aws_lightsail_instance.wireguard.name} --port-infos fromPort=${random_integer.wg_port.result},toPort=${random_integer.wg_port.result},protocol=udp fromPort=22,toPort=22,protocol=tcp"
-  }
 }
 
+resource "aws_lightsail_instance_public_ports" "wireguard" {
+  instance_name = aws_lightsail_instance.wireguard.name
 
+  # Wireguard
+  port_info {
+    protocol  = "udp"
+    from_port = random_integer.wg_port.result
+    to_port   = random_integer.wg_port.result
+  }
+  # SSH
+  port_info {
+    protocol  = "tcp"
+    from_port = 22
+    to_port   = 22
+  }
+  # DNS
+  port_info {
+    protocol  = "tcp"
+    from_port = 53
+    to_port   = 53
+  }
+  port_info {
+    protocol  = "udp"
+    from_port = 53
+    to_port   = 53
+  }
+}
