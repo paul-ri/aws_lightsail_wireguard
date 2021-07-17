@@ -3,8 +3,12 @@ set -euxo pipefail
 
 # Create keys
 umask 077
-wg genkey | tee server_privatekey | wg pubkey > server_publickey
-wg genkey | tee client_privatekey | wg pubkey > client_publickey
+if [ ! -f "server_publickey" ]; then
+  wg genkey | tee server_privatekey | wg pubkey > server_publickey
+fi
+if [ ! -f "client_publickey" ]; then
+  wg genkey | tee client_privatekey | wg pubkey > client_publickey
+fi
 
 # Setup vars for Terraform interpolation
 unset TF_VAR_SERVER_PRIVATEKEY
