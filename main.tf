@@ -3,11 +3,6 @@ provider "template" {}
 provider "null" {}
 provider "tls" {}
 
-provider "aws" {
-  profile = var.aws_profile_name
-  region = var.aws_region
-}
-
 resource "random_integer" "wg_port" {
   min = 20000
   max = 60000
