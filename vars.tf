@@ -10,3 +10,10 @@ variable "aws_profile_name" {
 }
 
 variable "aws_region" {}
+
+variable "instance_size" {
+  description = "Size of the instance"
+  type        = string
+  # nano micro small medium large xlarge 2xlarge
+  default     = "micro"
+}
