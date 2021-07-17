@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euxo pipefail
+
 # Clean up and set vars for destroy
 unset TF_VAR_SERVER_PRIVATEKEY
 unset TF_VAR_SERVER_PUBLICKEY

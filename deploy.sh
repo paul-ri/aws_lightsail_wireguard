@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euxo pipefail
+
 # Create keys
 umask 077
 wg genkey | tee server_privatekey | wg pubkey > server_publickey
