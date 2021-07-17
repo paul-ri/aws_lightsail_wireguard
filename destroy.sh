@@ -2,14 +2,14 @@
 set -euxo pipefail
 
 # Clean up and set vars for destroy
-unset TF_VAR_SERVER_PRIVATEKEY
-unset TF_VAR_SERVER_PUBLICKEY
-unset TF_VAR_CLIENT_PRIVATEKEY
-unset TF_VAR_CLIENT_PUBLICKEY
-export TF_VAR_SERVER_PRIVATEKEY=$(cat server_privatekey)
-export TF_VAR_SERVER_PUBLICKEY=$(cat server_publickey)
-export TF_VAR_CLIENT_PRIVATEKEY=$(cat client_privatekey)
-export TF_VAR_CLIENT_PUBLICKEY=$(cat client_publickey)
+TF_VAR_SERVER_PRIVATEKEY=$(cat server_privatekey)
+TF_VAR_SERVER_PUBLICKEY=$(cat server_publickey)
+TF_VAR_CLIENT_PRIVATEKEY=$(cat client_privatekey)
+TF_VAR_CLIENT_PUBLICKEY=$(cat client_publickey)
+export TF_VAR_SERVER_PRIVATEKEY
+export TF_VAR_SERVER_PUBLICKEY
+export TF_VAR_CLIENT_PRIVATEKEY
+export TF_VAR_CLIENT_PUBLICKEY
 
 # Destroy Infrastructure
 terraform destroy -auto-approve
