@@ -4,7 +4,7 @@ provider "null" {}
 provider "tls" {}
 
 provider "aws" {
-  region = "us-east-1"
+  region = var.aws_region
 }
 
 resource "random_integer" "wg_port" {
@@ -14,7 +14,7 @@ resource "random_integer" "wg_port" {
 
 locals {
   name    = "Wireguard"
-  AZ      = "us-east-1a"
+  AZ      = "${var.aws_region}a"
   OS      = "ubuntu_20_04"
   Size    = "micro_2_0"
   KeySize = 4096
