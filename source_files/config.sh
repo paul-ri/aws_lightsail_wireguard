@@ -17,7 +17,6 @@ apt-get update -y
 DEBIAN_FRONTEND=noninteractive apt-get upgrade -yq
 DEBIAN_FRONTEND=noninteractive apt-get install -y linux-aws
 DEBIAN_FRONTEND=noninteractive apt-get install -y linux-headers-aws
-add-apt-repository -y ppa:wireguard/wireguard
 apt-get update -y
 apt-get install -y wireguard
 
