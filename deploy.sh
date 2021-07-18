@@ -23,8 +23,8 @@ export TF_VAR_CLIENT_PUBLICKEY
 # Deploy infrastructure
 terraform init
 terraform apply -auto-approve
-terraform output private_key > id_rsa
+terraform output --raw private_key > id_rsa
 chmod u+x id_rsa
 chmod 600 id_rsa
-terraform output client_config > wg0-client.conf
+terraform output --raw client_config > wg0-client.conf
 
