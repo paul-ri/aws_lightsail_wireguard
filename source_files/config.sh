@@ -76,6 +76,50 @@ EOF
 sudo systemctl disable systemd-resolved
 sudo systemctl stop systemd-resolved
 sudo systemctl enable unbound
+mkdir -p /etc/wireguard/helper
+cat > /etc/wireguard/helper/add-nat-routing.sh << EOF
+#!/bin/bash
+# Track VPN connection
+iptables -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+# Allow incoming VPN traffic on the listening port
+iptables -A INPUT -p udp -m udp --dport $NET_PORT -m conntrack --ctstate NEW -j ACCEPT
+# Allow both TCP and UDP recursive DNS traffic
+iptables -A INPUT -s $SERVER_LINK_IPADDRESS/$LINK_NETMASK -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+iptables -A INPUT -s $SERVER_LINK_IPADDRESS/$LINK_NETMASK -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+# Allow forwarding of packets that stay in the VPN tunnel
+iptables -A FORWARD -i wg0 -o wg0 -m conntrack --ctstate NEW -j ACCEPT
+
+iptables -A FORWARD -i wg0 -j ACCEPT;
+iptables -t nat -A POSTROUTING -o $NET_IFACE -j MASQUERADE
+EOF
+
+cat > /etc/wireguard/helper/remove-nat-routing.sh <<EOF
+#!/bin/bash
+iptables -D INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+iptables -D FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+# Allow incoming VPN traffic on the listening port
+iptables -D INPUT -p udp -m udp --dport $NET_PORT -m conntrack --ctstate NEW -j ACCEPT
+# Allow both TCP and UDP recursive DNS traffic
+iptables -D INPUT -s $SERVER_LINK_IPADDRESS/$LINK_NETMASK -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+iptables -D INPUT -s $SERVER_LINK_IPADDRESS/$LINK_NETMASK -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+# Allow forwarding of packets that stay in the VPN tunnel
+iptables -D FORWARD -i wg0 -o wg0 -m conntrack --ctstate NEW -j ACCEPT
+
+iptables -D FORWARD -i wg0 -j ACCEPT;
+iptables -t nat -D POSTROUTING -o $NET_IFACE -j MASQUERADE
+EOF
+
+chmod +x /etc/wireguard/helper/*
+
+
+
+
+# Set up nat
+# Conflicts with what is setup in Wireguard
+#iptables -t nat -A POSTROUTING -s $SERVER_LINK_IPADDRESS/$LINK_NETMASK -o $NET_IFACE -j MASQUERADE
+
+#iptables-save > /etc/iptables/rules.v4
 
 # wireguard setup
 cd /etc/wireguard
@@ -87,8 +131,8 @@ Address = $SERVER_LINK_IPADDRESS/$LINK_NETMASK
 ListenPort = $NET_PORT
 SaveConfig = false
 
-PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o $NET_IFACE -j MASQUERADE
-PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o $NET_IFACE -j MASQUERADE
+PostUp = /etc/wireguard/helper/add-nat-routing.sh
+PostDown = /etc/wireguard/helper/remove-nat-routing.sh
 
 [Peer]
 PublicKey = $PEER_KEY
