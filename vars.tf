@@ -1,7 +1,15 @@
 variable "SERVER_PRIVATEKEY" {}
 variable "SERVER_PUBLICKEY" {}
-variable "CLIENT_PRIVATEKEY" {}
-variable "CLIENT_PUBLICKEY" {}
+variable "MDULAPTOP_PRIVATEKEY" {}
+variable "MDULAPTOP_PUBLICKEY" {}
+variable "FAIRPHONE_PRIVATEKEY" {}
+variable "FAIRPHONE_PUBLICKEY" {}
+variable "OPTIPLEX_PRIVATEKEY" {}
+variable "OPTIPLEX_PUBLICKEY" {}
+variable "RASPBERRYPI_PRIVATEKEY" {}
+variable "RASPBERRYPI_PUBLICKEY" {}
+variable "CHROMEBOOK_PRIVATEKEY" {}
+variable "CHROMEBOOK_PUBLICKEY" {}
 
 variable "aws_profile_name" {
   description = "AWS profile to use"

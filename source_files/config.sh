@@ -6,8 +6,16 @@ export WG_PKEY="${WG_PKEY}"
 export SERVER_LINK_IPADDRESS="${SERVER_LINK_IPADDRESS}"
 export LINK_NETMASK="${LINK_NETMASK}"
 export NET_PORT="${NET_PORT}"
-export PEER_ALLOWED_IPS="${PEER_ALLOWED_IPS}"
-export PEER_KEY="${PEER_KEY}"
+export PEER_MDULAPTOP_ALLOWED_IPS="${PEER_MDULAPTOP_ALLOWED_IPS}"
+export PEER_MDULAPTOP_KEY="${PEER_MDULAPTOP_KEY}"
+export PEER_FAIRPHONE_ALLOWED_IPS="${PEER_FAIRPHONE_ALLOWED_IPS}"
+export PEER_FAIRPHONE_KEY="${PEER_FAIRPHONE_KEY}"
+export PEER_OPTIPLEX_ALLOWED_IPS="${PEER_OPTIPLEX_ALLOWED_IPS}"
+export PEER_OPTIPLEX_KEY="${PEER_OPTIPLEX_KEY}"
+export PEER_RASPBERRYPI_ALLOWED_IPS="${PEER_RASPBERRYPI_ALLOWED_IPS}"
+export PEER_RASPBERRYPI_KEY="${PEER_RASPBERRYPI_KEY}"
+export PEER_CHROMEBOOK_ALLOWED_IPS="${PEER_CHROMEBOOK_ALLOWED_IPS}"
+export PEER_CHROMEBOOK_KEY="${PEER_CHROMEBOOK_KEY}"
 
 
 # get some system info
@@ -137,13 +145,30 @@ PostUp = /etc/wireguard/helper/add-nat-routing.sh
 PostDown = /etc/wireguard/helper/remove-nat-routing.sh
 
 [Peer]
-PublicKey = $PEER_KEY
-AllowedIPs = $PEER_ALLOWED_IPS
-EOF
+# MDU Laptop
+PublicKey = $PEER_MDULAPTOP_KEY
+AllowedIPs = $PEER_MDULAPTOP_ALLOWED_IPS, 192.168.0.0/24
 
-touch /etc/rc.local
-chmod +x /etc/rc.local
-echo 'modprobe wireguard' >> /etc/rc.local
+[Peer]
+# Fairphone
+PublicKey = $PEER_FAIRPHONE_KEY
+AllowedIPs = $PEER_FAIRPHONE_ALLOWED_IPS, 192.168.0.0/24
+
+[Peer]
+# Optiplex
+PublicKey = $PEER_OPTIPLEX_KEY
+AllowedIPs = $PEER_OPTIPLEX_ALLOWED_IPS
+
+[Peer]
+# Raspberry pi
+PublicKey = $PEER_RASPBERRYPI_KEY
+AllowedIPs = $PEER_RASPBERRYPI_ALLOWED_IPS
+
+[Peer]
+# Chromebook
+PublicKey = $PEER_CHROMEBOOK_KEY
+AllowedIPs = $PEER_CHROMEBOOK_ALLOWED_IPS, 192.168.0.0/24
+EOF
 
 # start wireguard service
 sysctl -w net.ipv4.ip_forward=1

@@ -1,30 +1,45 @@
 #!/bin/bash
 set -euxo pipefail
 
+clients=(
+"fairphone"
+"mdulaptop"
+"optiplex"
+"raspberrypi"
+"chromebook"
+"server"
+)
+
 # Create keys
 umask 077
-if [ ! -f "server_publickey" ]; then
-  wg genkey | tee server_privatekey | wg pubkey > server_publickey
-fi
-if [ ! -f "client_publickey" ]; then
-  wg genkey | tee client_privatekey | wg pubkey > client_publickey
-fi
+mkdir -p keys
 
-# Setup vars for Terraform interpolation
-TF_VAR_SERVER_PRIVATEKEY=$(cat server_privatekey)
-TF_VAR_SERVER_PUBLICKEY=$(cat server_publickey)
-TF_VAR_CLIENT_PRIVATEKEY=$(cat client_privatekey)
-TF_VAR_CLIENT_PUBLICKEY=$(cat client_publickey)
-export TF_VAR_SERVER_PRIVATEKEY
-export TF_VAR_SERVER_PUBLICKEY
-export TF_VAR_CLIENT_PRIVATEKEY
-export TF_VAR_CLIENT_PUBLICKEY
+keyGen(){
+    client="$1"
+    echo "### Generating Wireguard keys for ${client}"
+    wg genkey | tee "keys/${client}_privatekey" | wg pubkey > "keys/${client}_publickey"
+}
+
+for client in "${clients[@]}"; do
+  if [ ! -f "keys/${client}_publickey" ]; then
+    keyGen "$client"
+  fi
+done
+
+. tf_config.sh
 
 # Deploy infrastructure
 terraform init
-terraform apply -auto-approve
-terraform output --raw private_key > id_rsa
-chmod u+x id_rsa
-chmod 600 id_rsa
-terraform output --raw client_config > wg0-client.conf
+terraform apply
+terraform output --raw private_key > keys/id_rsa
+chmod u+x keys/id_rsa
+chmod 600 keys/id_rsa
+mkdir -p wg_client_configs
+terraform output --raw mdulaptop_config > wg_client_configs/wg0-mdulaptop.conf
+terraform output --raw fairphone_config > wg_client_configs/wg0-fairphone.conf
+terraform output --raw optiplex_config > wg_client_configs/wg0-optiplex.conf
+terraform output --raw raspberrypi_config > wg_client_configs/wg0-raspberrypi.conf
+terraform output --raw chromebook_config > wg_client_configs/wg0-chromebook.conf
 
+qrencode -o wg_client_configs/wg0-fairphone.png -t png < wg_client_configs/wg0-fairphone.conf;
+xdg-open wg_client_configs/wg0-fairphone.png
