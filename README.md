@@ -23,3 +23,12 @@ Starting project idea. https://github.com/flypenguin/terraform-quickvpn-wireguar
 ## Tools needed
 [Terraform](https://www.terraform.io/downloads.html)<br/>
 [Wireguard](https://www.wireguard.com/install/)
+
+## Paul notes
+* https://www.dnsleaktest.com/
+* https://www.xmodulo.com/wireguard-vpn-network-manager-gui.html
+
+Cloud initialisation logs of the instance available in `/var/log/cloud-init-output.log`
+
+### Resources
+* [WireGuard: How to access a peer’s local network](https://iliasa.eu/wireguard-how-to-access-a-peers-local-network/)
