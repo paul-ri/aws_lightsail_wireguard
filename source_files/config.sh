@@ -104,4 +104,9 @@ sysctl -w net.ipv4.ip_forward=1
 echo net.ipv4.ip_forward=1 > /etc/sysctl.conf
 wg-quick up wg0
 systemctl enable wg-quick@wg0
+
+# Personal preferences
+apt install fish fzf
+chsh -s /usr/bin/fish ubuntu
+
 init 6
