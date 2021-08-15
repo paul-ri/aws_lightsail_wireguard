@@ -1,4 +1,6 @@
 #!/bin/bash
+# Logs available in /var/log/cloud-init-output.log
+set -x
 
 export WG_PKEY="${WG_PKEY}"
 export SERVER_LINK_IPADDRESS="${SERVER_LINK_IPADDRESS}"
