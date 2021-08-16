@@ -27,6 +27,10 @@ luci-proto-qmi kmod-usb-net-qmi-wwan libqmi uqmi
 kmod-usb-core kmod-usb-serial-wwan kmod-usb-wdm
 libqrtr-glib wwan
 ```
+### DNS
+1. In OpenWRT: Network > interfaces > lan > dhcp server > advanced settings > dhcp-options
+2. Type `6,<IP address of pihole>`
+
 ### Wireguard
 1. `opkg install luci-app-wireguard wireguard-tools kmod-wireguard`
 
