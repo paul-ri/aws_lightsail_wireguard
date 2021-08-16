@@ -48,11 +48,6 @@ server:
   #list of Root DNS Server
   root-hints: "/var/lib/unbound/root.hints"
 
-#  forward-zone:
-#    name: "."
-#    forward-addr: $LOCAL_DNS
-
-
   # use the root server's key for DNSSEC
   auto-trust-anchor-file: "/var/lib/unbound/root.key"
 
