@@ -25,8 +25,6 @@ Starting project idea. https://github.com/flypenguin/terraform-quickvpn-wireguar
 [Wireguard](https://www.wireguard.com/install/)
 
 ## Paul notes
-* https://www.dnsleaktest.com/
-* https://www.xmodulo.com/wireguard-vpn-network-manager-gui.html
 
 Cloud initialisation logs of the instance available in `/var/log/cloud-init-output.log`
 
@@ -35,3 +33,8 @@ Cloud initialisation logs of the instance available in `/var/log/cloud-init-outp
 
 ### Resources
 * [WireGuard: How to access a peer’s local network](https://iliasa.eu/wireguard-how-to-access-a-peers-local-network/)
+* [ArchWiki - WireGuard - Server config](https://wiki.archlinux.org/title/WireGuard#Server_config))
+* [DNS Leak Test](https://www.dnsleaktest.com/)
+* [WireGuard Point to Site Configuration](https://www.procustodibus.com/blog/2020/11/wireguard-point-to-site-config/)
+* https://www.xmodulo.com/wireguard-vpn-network-manager-gui.html
+* https://www.cyberciti.biz/faq/how-to-set-up-wireguard-firewall-rules-in-linux/?__cf_chl_captcha_tk__=pmd_1348c2dfa1425f5f3877625be8effd60f035f300-1629076051-0-gqNtZGzNAzijcnBszQhO
