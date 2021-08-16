@@ -145,19 +145,6 @@ PublicKey = $PEER_CHROMEBOOK_KEY
 AllowedIPs = $PEER_CHROMEBOOK_ALLOWED_IPS
 EOF
 
-# Personal preferences
-apt install -y fish fzf
-chsh -s /usr/bin/fish ubuntu
-mkdir -p /home/ubuntu/.config/fish
-cat > /home/ubuntu/.config/fish/config.fish <<EOF
-if status --is-interactive
-    function fish_user_key_bindings
-        fzf_key_bindings
-    end
-end
-EOF
-chown -R ubuntu:ubuntu /home/ubuntu/.config
-
 # Start Wireguard service
 systemctl enable --now wg-quick@wg0
 
