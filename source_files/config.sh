@@ -16,8 +16,6 @@ export PEER_RASPBERRYPI_ALLOWED_IPS="${PEER_RASPBERRYPI_ALLOWED_IPS}"
 export PEER_RASPBERRYPI_KEY="${PEER_RASPBERRYPI_KEY}"
 export PEER_CHROMEBOOK_ALLOWED_IPS="${PEER_CHROMEBOOK_ALLOWED_IPS}"
 export PEER_CHROMEBOOK_KEY="${PEER_CHROMEBOOK_KEY}"
-# Set your own local DNS if there is one
-export LOCAL_DNS=10.1.2.4
 
 # get some system info
 NET_IFACE=$(ls /sys/class/net/ | grep -Ev '^(wg[0-9]+|lo)$')
