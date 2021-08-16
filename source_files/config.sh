@@ -98,9 +98,7 @@ systemctl enable unbound
 systemctl enable --now iptables
 
 # Wireguard setup
-cd /etc/wireguard
-
-cat > wg0.conf <<EOF
+cat > /etc/wireguard/wg0.conf <<EOF
 [Interface]
 PrivateKey = $WG_PKEY
 Address = $SERVER_LINK_IPADDRESS/$LINK_NETMASK
