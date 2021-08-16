@@ -101,59 +101,6 @@ systemctl enable unbound
 
 # Firewall
 systemctl enable --now iptables
-mkdir -p /etc/wireguard/helper
-
-## Attempt no 1
-cat > /etc/wireguard/helper/add-nat-routing-1.sh << EOF
-#!/bin/bash
-# Track VPN connection
-iptables -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-# Allow incoming VPN traffic on the listening port
-iptables -A INPUT -p udp -m udp --dport $NET_PORT -m conntrack --ctstate NEW -j ACCEPT
-# Allow both TCP and UDP recursive DNS traffic
-iptables -A INPUT -s $SERVER_LINK_IPADDRESS/$LINK_NETMASK -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-iptables -A INPUT -s $SERVER_LINK_IPADDRESS/$LINK_NETMASK -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-# Allow forwarding of packets that stay in the VPN tunnel
-iptables -A FORWARD -i wg0 -o wg0 -m conntrack --ctstate NEW -j ACCEPT
-
-iptables -A FORWARD -i wg0 -j ACCEPT;
-iptables -t nat -A POSTROUTING -o $NET_IFACE -j MASQUERADE
-EOF
-
-cat > /etc/wireguard/helper/remove-nat-routing-1.sh <<EOF
-#!/bin/bash
-iptables -D INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-iptables -D FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-# Allow incoming VPN traffic on the listening port
-iptables -D INPUT -p udp -m udp --dport $NET_PORT -m conntrack --ctstate NEW -j ACCEPT
-# Allow both TCP and UDP recursive DNS traffic
-iptables -D INPUT -s $SERVER_LINK_IPADDRESS/$LINK_NETMASK -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-iptables -D INPUT -s $SERVER_LINK_IPADDRESS/$LINK_NETMASK -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-# Allow forwarding of packets that stay in the VPN tunnel
-iptables -D FORWARD -i wg0 -o wg0 -m conntrack --ctstate NEW -j ACCEPT
-
-iptables -D FORWARD -i wg0 -j ACCEPT;
-iptables -t nat -D POSTROUTING -o $NET_IFACE -j MASQUERADE
-EOF
-
-## Attempt no 2
-# https://wiki.archlinux.org/title/WireGuard#Server_config
-cat > /etc/wireguard/helper/add-nat-routing-2.sh << EOF
-#!/bin/bash
-iptables -A FORWARD -i wg0 -j ACCEPT
-iptables -A FORWARD -o wg0 -j ACCEPT
-iptables -t nat -A POSTROUTING -o $NET_IFACE -j MASQUERADE
-EOF
-
-cat > /etc/wireguard/helper/remove-nat-routing-2.sh <<EOF
-#!/bin/bash
-iptables -D FORWARD -i wg0 -j ACCEPT
-iptables -D FORWARD -o wg0 -j ACCEPT
-iptables -t nat -D POSTROUTING -o $NET_IFACE -j MASQUERADE
-EOF
-
-chmod +x /etc/wireguard/helper/*
 
 # Wireguard setup
 cd /etc/wireguard
@@ -165,10 +112,17 @@ Address = $SERVER_LINK_IPADDRESS/$LINK_NETMASK
 ListenPort = $NET_PORT
 SaveConfig = true
 
-# Enable routing on the server
+# https://wiki.archlinux.org/title/WireGuard#Server_config
+# Enable routing on the server for peers to get internet access
 PreUp = sysctl -w net.ipv4.ip_forward=1
-#PostUp = /etc/wireguard/helper/add-nat-routing-2.sh
-#PostDown = /etc/wireguard/helper/remove-nat-routing-2.sh
+PostUp = iptables -A FORWARD -i wg0 -j ACCEPT
+PostUp = iptables -A FORWARD -o wg0 -j ACCEPT
+PostUp = iptables -t nat -A POSTROUTING -o $NET_IFACE -j MASQUERADE
+
+PostDown = iptables -D FORWARD -i wg0 -j ACCEPT
+PostDown = iptables -D FORWARD -o wg0 -j ACCEPT
+PostDown = iptables -t nat -D POSTROUTING -o $NET_IFACE -j MASQUERADE
+PostDown = sysctl -w net.ipv4.ip_forward=0
 
 [Peer]
 # MDU Laptop
