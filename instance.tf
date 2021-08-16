@@ -50,15 +50,4 @@ resource "aws_lightsail_instance_public_ports" "wireguard" {
     from_port = 22
     to_port   = 22
   }
-  # DNS
-  port_info {
-    protocol  = "tcp"
-    from_port = 53
-    to_port   = 53
-  }
-  port_info {
-    protocol  = "udp"
-    from_port = 53
-    to_port   = 53
-  }
 }

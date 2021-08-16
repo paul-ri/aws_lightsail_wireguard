@@ -16,7 +16,8 @@ export PEER_RASPBERRYPI_ALLOWED_IPS="${PEER_RASPBERRYPI_ALLOWED_IPS}"
 export PEER_RASPBERRYPI_KEY="${PEER_RASPBERRYPI_KEY}"
 export PEER_CHROMEBOOK_ALLOWED_IPS="${PEER_CHROMEBOOK_ALLOWED_IPS}"
 export PEER_CHROMEBOOK_KEY="${PEER_CHROMEBOOK_KEY}"
-
+# Set your own local DNS if there is one
+export LOCAL_DNS=10.1.2.4
 
 # get some system info
 NET_IFACE=$(ls /sys/class/net/ | grep -Ev '^(wg[0-9]+|lo)$')
@@ -26,16 +27,16 @@ NET_IFACE=$(ls /sys/class/net/ | grep -Ev '^(wg[0-9]+|lo)$')
 apt-get update -y
 DEBIAN_FRONTEND=noninteractive apt-get upgrade -yq
 DEBIAN_FRONTEND=noninteractive apt-get install -y linux-aws
-DEBIAN_FRONTEND=noninteractive apt-get install -y linux-headers-aws
-apt-get update -y
-apt-get install -y wireguard
+apt-get install -y wireguard qrencode
+echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
+echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections
+apt-get install -y iptables-persistent
 
 
 # Unbound setup
 apt-get install unbound unbound-host -y
 curl -o /var/lib/unbound/root.hints https://www.internic.net/domain/named.cache
-chown unbound:unbound /var/lib/unbound/root.hints
-
+chown -R unbound:unbound /var/lib/unbound
 
 cat > /etc/unbound/unbound.conf <<EOF
 server:
@@ -46,6 +47,14 @@ server:
 
   #list of Root DNS Server
   root-hints: "/var/lib/unbound/root.hints"
+
+#  forward-zone:
+#    name: "."
+#    forward-addr: $LOCAL_DNS
+
+
+  # use the root server's key for DNSSEC
+  auto-trust-anchor-file: "/var/lib/unbound/root.key"
 
   #Respond to DNS requests on all interfaces
   interface: 0.0.0.0
@@ -83,11 +92,19 @@ server:
   prefetch-key: yes
 EOF
 
-sudo systemctl disable systemd-resolved
-sudo systemctl stop systemd-resolved
-sudo systemctl enable unbound
+sed -Ei "s/(127.0.0.1 localhost)/\1 $(hostname)/" /etc/hosts
+
+systemctl disable systemd-resolved
+systemctl stop systemd-resolved
+systemctl enable unbound-resolvconf
+systemctl enable unbound
+
+# Firewall
+systemctl enable --now iptables
 mkdir -p /etc/wireguard/helper
-cat > /etc/wireguard/helper/add-nat-routing.sh << EOF
+
+## Attempt no 1
+cat > /etc/wireguard/helper/add-nat-routing-1.sh << EOF
 #!/bin/bash
 # Track VPN connection
 iptables -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
@@ -104,7 +121,7 @@ iptables -A FORWARD -i wg0 -j ACCEPT;
 iptables -t nat -A POSTROUTING -o $NET_IFACE -j MASQUERADE
 EOF
 
-cat > /etc/wireguard/helper/remove-nat-routing.sh <<EOF
+cat > /etc/wireguard/helper/remove-nat-routing-1.sh <<EOF
 #!/bin/bash
 iptables -D INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 iptables -D FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
@@ -120,18 +137,25 @@ iptables -D FORWARD -i wg0 -j ACCEPT;
 iptables -t nat -D POSTROUTING -o $NET_IFACE -j MASQUERADE
 EOF
 
+## Attempt no 2
+# https://wiki.archlinux.org/title/WireGuard#Server_config
+cat > /etc/wireguard/helper/add-nat-routing-2.sh << EOF
+#!/bin/bash
+iptables -A FORWARD -i wg0 -j ACCEPT
+iptables -A FORWARD -o wg0 -j ACCEPT
+iptables -t nat -A POSTROUTING -o $NET_IFACE -j MASQUERADE
+EOF
+
+cat > /etc/wireguard/helper/remove-nat-routing-2.sh <<EOF
+#!/bin/bash
+iptables -D FORWARD -i wg0 -j ACCEPT
+iptables -D FORWARD -o wg0 -j ACCEPT
+iptables -t nat -D POSTROUTING -o $NET_IFACE -j MASQUERADE
+EOF
+
 chmod +x /etc/wireguard/helper/*
 
-
-
-
-# Set up nat
-# Conflicts with what is setup in Wireguard
-#iptables -t nat -A POSTROUTING -s $SERVER_LINK_IPADDRESS/$LINK_NETMASK -o $NET_IFACE -j MASQUERADE
-
-#iptables-save > /etc/iptables/rules.v4
-
-# wireguard setup
+# Wireguard setup
 cd /etc/wireguard
 
 cat > wg0.conf <<EOF
@@ -139,45 +163,44 @@ cat > wg0.conf <<EOF
 PrivateKey = $WG_PKEY
 Address = $SERVER_LINK_IPADDRESS/$LINK_NETMASK
 ListenPort = $NET_PORT
-SaveConfig = false
+SaveConfig = true
 
-PostUp = /etc/wireguard/helper/add-nat-routing.sh
-PostDown = /etc/wireguard/helper/remove-nat-routing.sh
+# Enable routing on the server
+PreUp = sysctl -w net.ipv4.ip_forward=1
+#PostUp = /etc/wireguard/helper/add-nat-routing-2.sh
+#PostDown = /etc/wireguard/helper/remove-nat-routing-2.sh
 
 [Peer]
 # MDU Laptop
 PublicKey = $PEER_MDULAPTOP_KEY
-AllowedIPs = $PEER_MDULAPTOP_ALLOWED_IPS, 192.168.0.0/24
+AllowedIPs = $PEER_MDULAPTOP_ALLOWED_IPS
 
 [Peer]
 # Fairphone
 PublicKey = $PEER_FAIRPHONE_KEY
-AllowedIPs = $PEER_FAIRPHONE_ALLOWED_IPS, 192.168.0.0/24
+AllowedIPs = $PEER_FAIRPHONE_ALLOWED_IPS
 
 [Peer]
 # Optiplex
 PublicKey = $PEER_OPTIPLEX_KEY
-AllowedIPs = $PEER_OPTIPLEX_ALLOWED_IPS
+AllowedIPs = $PEER_OPTIPLEX_ALLOWED_IPS, 192.168.0.0/24
 
 [Peer]
 # Raspberry pi
 PublicKey = $PEER_RASPBERRYPI_KEY
-AllowedIPs = $PEER_RASPBERRYPI_ALLOWED_IPS
+AllowedIPs = $PEER_RASPBERRYPI_ALLOWED_IPS, 192.168.0.0/24
 
 [Peer]
 # Chromebook
 PublicKey = $PEER_CHROMEBOOK_KEY
-AllowedIPs = $PEER_CHROMEBOOK_ALLOWED_IPS, 192.168.0.0/24
+AllowedIPs = $PEER_CHROMEBOOK_ALLOWED_IPS
 EOF
 
-# start wireguard service
-sysctl -w net.ipv4.ip_forward=1
-echo net.ipv4.ip_forward=1 > /etc/sysctl.conf
-wg-quick up wg0
-systemctl enable wg-quick@wg0
+# Start Wireguard service
+#systemctl enable --now wg-quick@wg0
 
 # Personal preferences
-apt install fish fzf
+apt install -y fish fzf
 chsh -s /usr/bin/fish ubuntu
 
 init 6

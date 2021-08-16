@@ -1,9 +1,9 @@
 .idea/
-id_rsa
+keys/
+wg_client_configs/
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
 /privatekey
 /publickey
 /.terraform.tfstate.lock.info
-wg0-client.conf

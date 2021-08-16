@@ -51,6 +51,7 @@ output "optiplex_config" {
     SERVER_PORT               = local.wg_port
     PEER_OPTIPLEX_ALLOWED_IPS = "${local.client_optiplex_ip}/32"
     WG_IP                     = local.server_ip
+    WG_NETWORK                = local.server_network
   })
 }
 

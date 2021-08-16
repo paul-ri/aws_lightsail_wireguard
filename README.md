@@ -30,5 +30,8 @@ Starting project idea. https://github.com/flypenguin/terraform-quickvpn-wireguar
 
 Cloud initialisation logs of the instance available in `/var/log/cloud-init-output.log`
 
+### Clients setup
+* [Routes are periodically reset](https://wiki.archlinux.org/title/WireGuard#Routes_are_periodically_reset)
+
 ### Resources
 * [WireGuard: How to access a peer’s local network](https://iliasa.eu/wireguard-how-to-access-a-peers-local-network/)
