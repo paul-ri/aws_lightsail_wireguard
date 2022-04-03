@@ -23,3 +23,13 @@ variable "instance_size" {
   # nano micro small medium large xlarge 2xlarge
   default     = "nano"
 }
+
+variable "static_ip_name" {
+  description = "Name of the static IP to use for the instance"
+  type = string
+}
+
+variable "static_ip_address" {
+  description = "IP of the static IP to use for the instance"
+  type = string
+}

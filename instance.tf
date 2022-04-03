@@ -25,12 +25,8 @@ resource "aws_lightsail_instance" "wireguard" {
 }
 
 resource "aws_lightsail_static_ip_attachment" "static_ip_attachment" {
-  static_ip_name = aws_lightsail_static_ip.static_ip.id
+  static_ip_name = var.static_ip_name
   instance_name  = aws_lightsail_instance.wireguard.id
-}
-
-resource "aws_lightsail_static_ip" "static_ip" {
-  name = "${local.name}-static-ip"
 }
 
 resource "aws_lightsail_instance_public_ports" "wireguard" {

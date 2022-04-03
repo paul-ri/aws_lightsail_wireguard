@@ -1,3 +1,5 @@
-aws_profile_name = "home-mfa"
-aws_region       = "eu-west-1"
-instance_size    = "nano"
+aws_profile_name  = "home-mfa"
+aws_region        = "eu-west-2"
+instance_size     = "nano"
+static_ip_name    = "wireguard_static_ip"
+static_ip_address = "3.10.32.97"

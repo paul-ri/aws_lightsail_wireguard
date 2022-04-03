@@ -21,7 +21,7 @@ output "mdulaptop_config" {
   {
     WG_MDULAPTOP_PRIVATE_KEY   = var.MDULAPTOP_PRIVATEKEY
     WG_SERVER_PUBLIC_KEY       = var.SERVER_PUBLICKEY
-    SERVER_IP                  = aws_lightsail_static_ip.static_ip.ip_address
+    SERVER_IP                  = var.static_ip_address
     SERVER_PORT                = local.wg_port
     PEER_MDULAPTOP_ALLOWED_IPS = "${local.client_mdulaptop_ip}/32"
     WG_IP                      = local.server_ip
@@ -34,7 +34,7 @@ output "fairphone_config" {
   {
     WG_FAIRPHONE_PRIVATE_KEY   = var.FAIRPHONE_PRIVATEKEY
     WG_SERVER_PUBLIC_KEY       = var.SERVER_PUBLICKEY
-    SERVER_IP                  = aws_lightsail_static_ip.static_ip.ip_address
+    SERVER_IP                  = var.static_ip_address
     SERVER_PORT                = local.wg_port
     PEER_FAIRPHONE_ALLOWED_IPS = "${local.client_fairphone_ip}/32"
     WG_IP                      = local.server_ip
@@ -47,7 +47,7 @@ output "optiplex_config" {
   {
     WG_OPTIPLEX_PRIVATE_KEY   = var.OPTIPLEX_PRIVATEKEY
     WG_SERVER_PUBLIC_KEY      = var.SERVER_PUBLICKEY
-    SERVER_IP                 = aws_lightsail_static_ip.static_ip.ip_address
+    SERVER_IP                 = var.static_ip_address
     SERVER_PORT               = local.wg_port
     PEER_OPTIPLEX_ALLOWED_IPS = "${local.client_optiplex_ip}/32"
     WG_IP                     = local.server_ip
@@ -61,7 +61,7 @@ output "chromebook_config" {
   {
     WG_CHROMEBOOK_PRIVATE_KEY    = var.CHROMEBOOK_PRIVATEKEY
     WG_SERVER_PUBLIC_KEY         = var.SERVER_PUBLICKEY
-    SERVER_IP                    = aws_lightsail_static_ip.static_ip.ip_address
+    SERVER_IP                    = var.static_ip_address
     SERVER_PORT                  = local.wg_port
     PEER_CHROMEBOOK_ALLOWED_IPS  = "${local.client_chromebook_ip}/32"
     WG_IP                        = local.server_ip
