@@ -5,7 +5,6 @@ clients=(
 "fairphone"
 "mdulaptop"
 "optiplex"
-"raspberrypi"
 "chromebook"
 "server"
 )
@@ -38,7 +37,6 @@ mkdir -p wg_client_configs
 terraform output --raw mdulaptop_config > wg_client_configs/wg0-mdulaptop.conf
 terraform output --raw fairphone_config > wg_client_configs/wg0-fairphone.conf
 terraform output --raw optiplex_config > wg_client_configs/wg0-optiplex.conf
-terraform output --raw raspberrypi_config > wg_client_configs/wg0-raspberrypi.conf
 terraform output --raw chromebook_config > wg_client_configs/wg0-chromebook.conf
 
 qrencode -o wg_client_configs/wg0-fairphone.png -t png < wg_client_configs/wg0-fairphone.conf;

@@ -15,6 +15,5 @@ locals {
   client_mdulaptop_ip   = "10.1.2.2"
   client_fairphone_ip   = "10.1.2.3"
   client_optiplex_ip    = "10.1.2.4"
-  client_raspberrypi_ip = "10.1.2.5"
   client_chromebook_ip  = "10.1.2.6"
 }

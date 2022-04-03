@@ -18,8 +18,6 @@ resource "aws_lightsail_instance" "wireguard" {
     PEER_FAIRPHONE_ALLOWED_IPS   = "${local.client_fairphone_ip}/32"
     PEER_OPTIPLEX_KEY            = var.OPTIPLEX_PUBLICKEY
     PEER_OPTIPLEX_ALLOWED_IPS    = "${local.client_optiplex_ip}/32"
-    PEER_RASPBERRYPI_KEY         = var.RASPBERRYPI_PUBLICKEY
-    PEER_RASPBERRYPI_ALLOWED_IPS = "${local.client_raspberrypi_ip}/32"
     PEER_CHROMEBOOK_KEY          = var.CHROMEBOOK_PUBLICKEY
     PEER_CHROMEBOOK_ALLOWED_IPS  = "${local.client_chromebook_ip}/32"
     WG_NETWORK                   = local.server_network

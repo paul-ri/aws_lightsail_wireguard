@@ -10,8 +10,6 @@ TF_VAR_FAIRPHONE_PRIVATEKEY=$(cat keys/fairphone_privatekey)
 TF_VAR_FAIRPHONE_PUBLICKEY=$(cat keys/fairphone_publickey)
 TF_VAR_OPTIPLEX_PRIVATEKEY=$(cat keys/optiplex_privatekey)
 TF_VAR_OPTIPLEX_PUBLICKEY=$(cat keys/optiplex_publickey)
-TF_VAR_RASPBERRYPI_PRIVATEKEY=$(cat keys/raspberrypi_privatekey)
-TF_VAR_RASPBERRYPI_PUBLICKEY=$(cat keys/raspberrypi_publickey)
 TF_VAR_CHROMEBOOK_PRIVATEKEY=$(cat keys/chromebook_privatekey)
 TF_VAR_CHROMEBOOK_PUBLICKEY=$(cat keys/chromebook_publickey)
 export TF_VAR_SERVER_PRIVATEKEY
@@ -22,7 +20,5 @@ export TF_VAR_FAIRPHONE_PRIVATEKEY
 export TF_VAR_FAIRPHONE_PUBLICKEY
 export TF_VAR_OPTIPLEX_PRIVATEKEY
 export TF_VAR_OPTIPLEX_PUBLICKEY
-export TF_VAR_RASPBERRYPI_PRIVATEKEY
-export TF_VAR_RASPBERRYPI_PUBLICKEY
 export TF_VAR_CHROMEBOOK_PRIVATEKEY
 export TF_VAR_CHROMEBOOK_PUBLICKEY

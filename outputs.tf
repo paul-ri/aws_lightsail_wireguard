@@ -55,20 +55,6 @@ output "optiplex_config" {
   })
 }
 
-output "raspberrypi_config" {
-  value = templatefile(
-  "${path.module}/source_files/wg0-raspberrypi.conf",
-  {
-    WG_RASPBERRYPI_PRIVATE_KEY   = var.RASPBERRYPI_PRIVATEKEY
-    WG_SERVER_PUBLIC_KEY         = var.SERVER_PUBLICKEY
-    SERVER_IP                    = aws_lightsail_static_ip.static_ip.ip_address
-    SERVER_PORT                  = local.wg_port
-    PEER_RASPBERRYPI_ALLOWED_IPS = "${local.client_raspberrypi_ip}/32"
-    WG_IP                        = local.server_ip
-    WG_NETWORK                   = local.server_network
-  })
-}
-
 output "chromebook_config" {
   value = templatefile(
   "${path.module}/source_files/wg0-chromebook.conf",
